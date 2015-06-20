@@ -18,6 +18,10 @@ defmodule Hexball.Router do
     get "/", PageController, :index
   end
 
+  socket "/ws", Hexball do
+    channel "game:*", GameChannel
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Hexball do
   #   pipe_through :api
