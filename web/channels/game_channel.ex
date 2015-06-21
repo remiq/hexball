@@ -1,18 +1,36 @@
 defmodule Hexball.GameChannel do
 	use Phoenix.Channel
+	alias Hexball.Game.Supervisor
+	alias Hexball.Game.Simulation
 
 	def join("game:" <> game_id, _auth_msg, socket) do
 		# FUTURE: private games, tournaments should be started with token distributed by web; alt: channel for private/tournaments
 		IO.inspect "Anonymous player joined game: " <> game_id
+		game = Supervisor.get_game(game_id)
+		game_user = Simulation.join game
+		socket = assign(socket, :user, game_user)
 		{:ok, socket}
 	end
 
 	@doc """
 	Message from player containing vectors and "kick" status
 	"""
-	def handle_in("move", %{"dx" => dx, "dy" => dy, "kick" => kick}, socket) do
-		# TODO: feed data to model
-		# TODO: this changes vector, not moves. If I send same message, nothing will change in the same simulation tick.
+	def handle_in("move:" <> game_id, data, socket) do
+		IO.inspect "received move"
+		IO.inspect data
+		%{"x" => ix, "y" => iy, "k" => kick} = data
+		game = Supervisor.get_game (game_id)
+		user = socket.assigns[:user]
+		IO.inspect user
+		Simulation.move(game, user)
+
+		# TEST
+		broadcast! socket, "state", %{"test" => "true"}
+		{:noreply, socket}
+	end
+
+	def handle_in(msg, data, socket) do
+		IO.inspect "Unhandled message: " <> msg
 		{:noreply, socket}
 	end
 
@@ -20,6 +38,7 @@ defmodule Hexball.GameChannel do
 	Sends game data (players/ball positions and vectors)
 	"""
 	def handle_out("state", payload, socket) do
+		IO.inspect socket
 		push socket, "state", payload
 		{:noreply, socket}
 	end

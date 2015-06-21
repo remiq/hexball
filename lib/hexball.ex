@@ -13,6 +13,8 @@ defmodule Hexball do
       worker(Hexball.Repo, []),
       # Here you could define other workers and supervisors as children
       # worker(Hexball.Worker, [arg1, arg2, arg3]),
+
+      supervisor(Hexball.Game.Supervisor, [[name: Hexball.Game.Supervisor]])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
