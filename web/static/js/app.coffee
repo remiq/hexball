@@ -43,7 +43,8 @@ App =
 				when K_RIGHT then mi(-1, 0)
 		
 	handle_gamestate: (game_state) ->
-		console.log game_state
+		#console.log game_state
+		$('#p1').attr('cx', game_state.x)
 
 	move_send: (player_state) ->
 		console.log player_state

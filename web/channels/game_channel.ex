@@ -7,7 +7,7 @@ defmodule Hexball.GameChannel do
 		# FUTURE: private games, tournaments should be started with token distributed by web; alt: channel for private/tournaments
 		IO.inspect "Anonymous player joined game: " <> game_id
 		game = Supervisor.get_game(game_id)
-		game_user = Simulation.join game
+		game_user = Simulation.join(game, socket)
 		socket = assign(socket, :user, game_user)
 		{:ok, socket}
 	end
@@ -25,7 +25,7 @@ defmodule Hexball.GameChannel do
 		Simulation.move(game, user)
 
 		# TEST
-		broadcast! socket, "state", %{"test" => "true"}
+		#broadcast! socket, "state", %{"test" => "true"}
 		{:noreply, socket}
 	end
 
@@ -38,7 +38,7 @@ defmodule Hexball.GameChannel do
 	Sends game data (players/ball positions and vectors)
 	"""
 	def handle_out("state", payload, socket) do
-		IO.inspect socket
+		#IO.inspect payload
 		push socket, "state", payload
 		{:noreply, socket}
 	end

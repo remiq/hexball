@@ -8,13 +8,13 @@ defmodule Hexball.Game.Supervisor do
 	def init(:ok) do
 		# TODO: how to add new worker runtime?
 		children = [
-			worker(Hexball.Game.Simulation, [[name: Hexball.Game.Simulation]])
+			worker(Hexball.Game.Simulation, [[name: :single]])
 		]
 		supervise(children, strategy: :one_for_one)
 	end
 
-	def get_game(_game_name) do
-		Hexball.Game.Simulation
+	def get_game(game_name) do
+		:single
 	end
 
 end
