@@ -29,29 +29,29 @@ App =
 		w.onkeydown = (k) ->
 			mi = App.player.move_intent
 			switch k.keyCode
-				when K_UP then mi(0, 1)
-				when K_DOWN then mi(0, -1)
+				when K_UP then mi(0, -1)
+				when K_DOWN then mi(0, 1)
 				when K_LEFT then mi(-1, 0)
 				when K_RIGHT then mi(1, 0)
 			
 		w.onkeyup = (k) ->
 			mi = App.player.move_intent
 			switch k.keyCode
-				when K_UP then mi(0, -1)
-				when K_DOWN then mi(0, 1)
+				when K_UP then mi(0, 1)
+				when K_DOWN then mi(0, -1)
 				when K_LEFT then mi(1, 0)
 				when K_RIGHT then mi(-1, 0)
 		
 	handle_gamestate: (game_state) ->
-		console.log game_state.players[0]
+		#console.log game_state.players
 		#$('#p1').attr('cx', game_state.x)
 		React.render(
-			React.createElement(PlayerEl, {data: game_state.players[0]}),
+			React.createElement(PlayerEl, {data: game_state.players['test']}),
 			document.getElementById('state')
 		);
 
 	move_send: (player_state) ->
-		console.log player_state
+		#console.log player_state
 		App.chan.push "move:" + GAME, player_state
 		#console.log player_state
 
@@ -66,7 +66,7 @@ PlayerEl = React.createClass _ =
 		React.createElement 'circle', _ =
 			cx: this.props.data.x,
 			cy: this.props.data.y,
-			r: 5
+			r: 2
 
 
 

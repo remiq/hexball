@@ -3,7 +3,8 @@ defmodule Hexball.Game.Simulation do
 
 	@update_ms 50
 	@intent2accel 0.1
-	@maxdx 3
+	@maxdx 10
+	@deaccel 0.9
 
 	def start_link(opts \\ []) do
 		GenServer.start_link __MODULE__, :ok, opts
@@ -14,9 +15,7 @@ defmodule Hexball.Game.Simulation do
 		:timer.send_after(100, :step)
 		# TODO: add game_id?
 		{:ok, %{
-			players: [],
-			x: 0,
-			left: true
+			players: %{}
 			#:ball
 			#:score
 			}}
@@ -26,7 +25,8 @@ defmodule Hexball.Game.Simulation do
 	Adds new player to game and returns their ID.
 	"""
 	def join(server, socket) do
-		user_id = :random.uniform
+		#user_id = :random.uniform
+		user_id = :test
 		GenServer.cast(server, {:join, user_id})
 		user_id
 	end
@@ -34,14 +34,21 @@ defmodule Hexball.Game.Simulation do
 	@doc """
 	Adds user's intent to move
 	"""
-	def move(server, user) do
-
+	def move(server, user_id, data) do
+		GenServer.cast server, {:move, user_id, data}
 	end
 
 	def handle_cast({:join, user_id}, state) do
 		user = gen_user(user_id)
-		state = Dict.put state, :players, state[:players] ++ [user] 
+		players = Dict.put state[:players], user_id, user
+		state = Dict.put state, :players, players 
 		{:noreply, state}
+	end
+
+	def handle_cast({move, user_id, input}, state) do
+		player = process_intent state[:players][user_id], input
+		players = Dict.put state[:players], user_id, player
+		{:noreply, %{state | players: players}}
 	end
 
 	def handle_info(:step, state) do
@@ -51,25 +58,25 @@ defmodule Hexball.Game.Simulation do
 		{:noreply, state}
 	end
 
+	defp get_player(state, user_id) do
+		Dict.get state[:players], user_id
+	end
+
+	defp process_intent(player, input) do
+		%{player | 
+			ix: input["x"], 
+			iy: input["y"],
+			kick: input["k"]
+		}
+	end
+
 	@doc """
 	Executes step in simulation
 	"""
 	defp process_step(state) do
-		# foreach object
-		players = Dict.get state, :players
-		state = process_players(state, players, [])
-		state
-	end
-
-	defp process_players(state, [player|rest], acc) do
-		player = process_player	player
-		IO.inspect player
-		process_players(state, rest, acc ++ [player])
-	end
-
-	defp process_players(state, [], acc) do
-		state = Dict.put state, :players, acc
-		state
+		players = Enum.reduce Dict.get(state, :players), %{},
+			fn {user_id, player}, acc -> Dict.put(acc, user_id, process_player(player)) end
+		%{state | players: players}
 	end
 
 	defp process_player(player) do
@@ -83,29 +90,25 @@ defmodule Hexball.Game.Simulation do
 		%{
 			object |
 			x: object[:x] + object[:dx],
-			dx: maxd(object[:dx] + object[:ix] * @intent2accel),
+			dx: maxd((object[:dx] + object[:ix] * @intent2accel) * @deaccel),
 			y: object[:y] + object[:dy],
-			dy: maxd(object[:dy] + object[:iy] * @intent2accel)
+			dy: maxd((object[:dy] + object[:iy] * @intent2accel) * @deaccel)
 		}
 	end
 
 	defp process_boundaries(object) do
 		%{x: x, y: y} = object
-		if x < 5 || x > 95 do
-			object = flip_dx(object)
+		if x < 2 || x > 98 do
+			object = flip(object, :dx)
 		end
-		if y < 5 || y > 45 do
-			object = flip_dy(object)
+		if y < 2 || y > 48 do
+			object = flip(object, :dy)
 		end
 		object
 	end
 
-	defp flip_dx(object) do
-		%{object | dx: -1 * object[:dx]}
-	end
-
-	defp flip_dy(object) do
-		%{object | dy: -1 * object[:dy]}
+	defp flip(object, attr) do
+		Dict.put object, attr, -object[attr]
 	end
 
 	defp maxd(x) do
