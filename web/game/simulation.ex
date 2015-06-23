@@ -12,7 +12,7 @@ defmodule Hexball.Game.Simulation do
 		:timer.send_after(100, :step)
 		# TODO: add game_id?
 		{:ok, %{
-			players: [], # player positions and intentions. Map?
+			players: [],
 			x: 0,
 			left: true
 			#:ball
@@ -36,14 +36,9 @@ defmodule Hexball.Game.Simulation do
 
 	end
 
-	# TODO: add periodical simulation step execution
-	# TODO: add state broadcasting after step
-
-	def handle_cast({:join, socket}, state) do
-		# TODO: randomize player team / position
-		# TODO: add to state
-		#state = Dict.put(state, :socket, socket)
-		#state = Dict.put(state, :players, state[:players] ++ [user])
+	def handle_cast({:join, user_id}, state) do
+		user = gen_user(user_id)
+		state = Dict.put state, :players, state[:players] ++ [user] 
 		{:noreply, state}
 	end
 
@@ -58,18 +53,49 @@ defmodule Hexball.Game.Simulation do
 	Executes step in simulation
 	"""
 	defp process_step(state) do
+		# foreach object
+		players = Dict.get state, :players
+		state = process_players(state, players, [])
+		state
+	end
+
+	defp process_players(state, [player|rest], acc) do
+		x = Dict.get player, :x
+
 		if state[:left] do
-			state = Dict.put(state, :x, state[:x] + 1)
+			x = x + 1
 		else
-			state = Dict.put(state, :x, state[:x] - 1)
+			x = x - 1
 		end
-		if state[:x] > 50 do
+		if x > 50 do
 				state = Dict.put(state, :left, false)
 		end
-		if state[:x] < 1 do
+		if x < 1 do
 				state = Dict.put(state, :left, true)
 		end
+		player = Dict.put player, :x, x
+		process_players(state, rest, acc ++ [player])
+	end
+
+	defp process_players(state, [], acc) do
+		state = Dict.put state, :players, acc
 		state
+	end
+
+	@doc """
+	Spawns new user
+	"""
+	defp gen_user(user_id) do
+		player = %{
+			user_id: user_id,
+			x: 0, y: 0, # position
+			dx: 0, dy: 0, # velocity
+			ix: 0, iy: 0, kick: 0, # intention to move
+			team: :red
+		}
+		player = %{player | x: 25, y: 25}
+		# TODO: check if position is not in use
+		player
 	end
 
 end

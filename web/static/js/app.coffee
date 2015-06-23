@@ -43,8 +43,12 @@ App =
 				when K_RIGHT then mi(-1, 0)
 		
 	handle_gamestate: (game_state) ->
-		#console.log game_state
-		$('#p1').attr('cx', game_state.x)
+		console.log game_state.players[0]
+		#$('#p1').attr('cx', game_state.x)
+		React.render(
+			React.createElement(PlayerEl, {data: game_state.players[0]}),
+			document.getElementById('state')
+		);
 
 	move_send: (player_state) ->
 		console.log player_state
@@ -55,3 +59,14 @@ App =
 App.connect()
 App.handle_keys(window)
 window.App = App
+
+PlayerEl = React.createClass _ =
+	displayName: 'player'
+	render: () ->
+		React.createElement 'circle', _ =
+			cx: this.props.data.x,
+			cy: this.props.data.y,
+			r: 5
+
+
+
