@@ -2,6 +2,8 @@ defmodule Hexball.Game.Simulation do
 	use GenServer
 
 	@update_ms 50
+	@intent2accel 0.1
+	@maxdx 3
 
 	def start_link(opts \\ []) do
 		GenServer.start_link __MODULE__, :ok, opts
@@ -60,26 +62,54 @@ defmodule Hexball.Game.Simulation do
 	end
 
 	defp process_players(state, [player|rest], acc) do
-		x = Dict.get player, :x
-
-		if state[:left] do
-			x = x + 1
-		else
-			x = x - 1
-		end
-		if x > 50 do
-				state = Dict.put(state, :left, false)
-		end
-		if x < 1 do
-				state = Dict.put(state, :left, true)
-		end
-		player = Dict.put player, :x, x
+		player = process_player	player
+		IO.inspect player
 		process_players(state, rest, acc ++ [player])
 	end
 
 	defp process_players(state, [], acc) do
 		state = Dict.put state, :players, acc
 		state
+	end
+
+	defp process_player(player) do
+		player
+		|> process_move
+		|> process_boundaries
+		# process_colisions?
+	end
+
+	defp process_move(object) do
+		%{
+			object |
+			x: object[:x] + object[:dx],
+			dx: maxd(object[:dx] + object[:ix] * @intent2accel),
+			y: object[:y] + object[:dy],
+			dy: maxd(object[:dy] + object[:iy] * @intent2accel)
+		}
+	end
+
+	defp process_boundaries(object) do
+		%{x: x, y: y} = object
+		if x < 5 || x > 95 do
+			object = flip_dx(object)
+		end
+		if y < 5 || y > 45 do
+			object = flip_dy(object)
+		end
+		object
+	end
+
+	defp flip_dx(object) do
+		%{object | dx: -1 * object[:dx]}
+	end
+
+	defp flip_dy(object) do
+		%{object | dy: -1 * object[:dy]}
+	end
+
+	defp maxd(x) do
+		Float.round(1.0 * max(min(x, @maxdx), -@maxdx), 2)
 	end
 
 	@doc """
@@ -89,7 +119,7 @@ defmodule Hexball.Game.Simulation do
 		player = %{
 			user_id: user_id,
 			x: 0, y: 0, # position
-			dx: 0, dy: 0, # velocity
+			dx: 1, dy: 0.5, # velocity
 			ix: 0, iy: 0, kick: 0, # intention to move
 			team: :red
 		}
