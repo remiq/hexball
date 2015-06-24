@@ -1,5 +1,6 @@
 defmodule Hexball.Game.Simulation do
 	use GenServer
+	alias Hexball.Game.Collision
 
 	@update_ms 50
 	@intent2accel 0.1
@@ -75,12 +76,7 @@ defmodule Hexball.Game.Simulation do
 	defp process_step(state) do
 		state
 		|> process_players
-		|> process_collisions
-	end
-
-	defp process_collisions(state) do
-
-		state
+		|> Collision.process
 	end
 
 	defp process_players(state) do
@@ -89,11 +85,17 @@ defmodule Hexball.Game.Simulation do
 		%{state | players: players}
 	end
 
+	def process_collisions(state) do
+		# foreach player A
+			# foreach player B
+				# is_collision(A,B)
+					# 
+	end
+
 	defp process_player(player) do
 		player
 		|> process_move
 		|> process_boundaries
-		# process_colisions?
 	end
 
 	defp process_move(object) do
@@ -107,6 +109,7 @@ defmodule Hexball.Game.Simulation do
 	end
 
 	defp process_boundaries(object) do
+		# TODO: move to Collision
 		%{x: x, y: y} = object
 		if x < 2 || x > 98 do
 			object = flip(object, :dx)
