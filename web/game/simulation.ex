@@ -102,9 +102,9 @@ defmodule Hexball.Game.Simulation do
 		%{
 			object |
 			x: object[:x] + object[:dx],
-			dx: maxd((object[:dx] + object[:ix] * @intent2accel) * @deaccel),
+			dx: maxd((object[:dx] + object[:ix] * @intent2accel) * object[:deaccel]),
 			y: object[:y] + object[:dy],
-			dy: maxd((object[:dy] + object[:iy] * @intent2accel) * @deaccel)
+			dy: maxd((object[:dy] + object[:iy] * @intent2accel) * object[:deaccel])
 		}
 	end
 
@@ -137,7 +137,8 @@ defmodule Hexball.Game.Simulation do
 			x: 0, y: 0, # position
 			dx: 1, dy: 0.5, # velocity
 			ix: 0, iy: 0, kick: 0, # intention to move
-			r: 2, team: team_random
+			r: 2, team: team_random,
+			deaccel: 0.9
 		}
 		player = %{player | x: 25, y: 25}
 		# TODO: check if position is not in use
@@ -157,7 +158,8 @@ defmodule Hexball.Game.Simulation do
 			x: 50, y: 25,
 			dx: 0, dy: 0,
 			ix: 0, iy: 0, kick: 0,
-			r: 1, team: :ball
+			r: 1, team: :ball,
+			deaccel: 0.99
 		}
 	end
 

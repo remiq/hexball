@@ -23,6 +23,7 @@ defmodule Hexball.Game.Collision do
         # this looks bad
         {uida, %{a | dx: b[:dx], dy: b[:dy]}}, 
         {uidb, %{b | dx: a[:dx], dy: a[:dy]}}
+        # if kick, add additional velocity
       }
     end
     check(a, rest, acc ++ [b])
