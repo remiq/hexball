@@ -11,11 +11,10 @@ defmodule Hexball.Game.Simulation do
 	end
 
 	def init(:ok) do
-		:random.seed :erlang.now
 		:timer.send_after(100, :step)
 		# TODO: add game_id?
 		{:ok, %{
-			players: %{}
+			players: %{ball: gen_ball}
 			#:ball
 			#:score
 			}}
@@ -25,8 +24,8 @@ defmodule Hexball.Game.Simulation do
 	Adds new player to game and returns their ID.
 	"""
 	def join(server, socket) do
-		#user_id = :random.uniform
-		user_id = :test
+		:random.seed :erlang.now # this looks bad
+		user_id = Float.to_string(:random.uniform)
 		GenServer.cast(server, {:join, user_id})
 		user_id
 	end
@@ -74,6 +73,17 @@ defmodule Hexball.Game.Simulation do
 	Executes step in simulation
 	"""
 	defp process_step(state) do
+		state
+		|> process_players
+		|> process_collisions
+	end
+
+	defp process_collisions(state) do
+
+		state
+	end
+
+	defp process_players(state) do
 		players = Enum.reduce Dict.get(state, :players), %{},
 			fn {user_id, player}, acc -> Dict.put(acc, user_id, process_player(player)) end
 		%{state | players: players}
@@ -124,11 +134,28 @@ defmodule Hexball.Game.Simulation do
 			x: 0, y: 0, # position
 			dx: 1, dy: 0.5, # velocity
 			ix: 0, iy: 0, kick: 0, # intention to move
-			team: :red
+			r: 2, team: team_random
 		}
 		player = %{player | x: 25, y: 25}
 		# TODO: check if position is not in use
 		player
+	end
+
+	defp team_random do
+		case :random.uniform(2) do
+			1 -> :red
+			2 -> :blue
+		end
+	end
+
+	defp gen_ball do
+		%{
+			user_id: 'ball',
+			x: 50, y: 25,
+			dx: 0, dy: 0,
+			ix: 0, iy: 0, kick: 0,
+			r: 1, team: :ball
+		}
 	end
 
 end

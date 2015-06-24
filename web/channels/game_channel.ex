@@ -8,9 +8,12 @@ defmodule Hexball.GameChannel do
 		IO.inspect "Anonymous player joined game: " <> game_id
 		game = Supervisor.get_game(game_id)
 		user_id = Simulation.join(game, socket)
+		IO.inspect user_id
 		socket = assign(socket, :user, user_id)
 		{:ok, socket}
 	end
+
+	# TODO: handle terminating users... or not
 
 	@doc """
 	Message from player containing vectors and "kick" status

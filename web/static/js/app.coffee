@@ -46,7 +46,7 @@ App =
 		#console.log game_state.players
 		#$('#p1').attr('cx', game_state.x)
 		React.render(
-			React.createElement(PlayerEl, {data: game_state.players['test']}),
+			React.createElement(StateEl, {state: game_state}),
 			document.getElementById('state')
 		);
 
@@ -66,7 +66,13 @@ PlayerEl = React.createClass _ =
 		React.createElement 'circle', _ =
 			cx: this.props.data.x,
 			cy: this.props.data.y,
-			r: 2
+			r: this.props.data.r,
+			className: 'player ' + this.props.data.team
 
-
+StateEl = React.createClass _ =
+	displayName: 'players'
+	render: () ->
+		children = (React.createElement(PlayerEl, {data: data, key: user_id}) for user_id, data of this.props.state.players)
+		React.createElement 'g', {}, children
+			
 

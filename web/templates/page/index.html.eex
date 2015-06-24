@@ -4,12 +4,15 @@
 
     }
     .map {
-      fill:#00AA00;
+      fill: #00AA00;
     }
-    .team-red {
+    .ball {
+      fill: #FFFFFF;
+    }
+    .red {
       fill: #FF0000;
     }
-    .team-blue {
+    .blue {
       fill: #0000FF;
     }
   </style>
