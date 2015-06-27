@@ -21,10 +21,6 @@ defmodule Hexball.GameChannel do
 		Simulation.leave(game, user_id)
 	end
 
-	"""
-
-	# TODO: handle terminating users... or not
-
 	@doc """
 	Message from player containing vectors and "kick" status
 	"""
@@ -41,7 +37,7 @@ defmodule Hexball.GameChannel do
 		{:noreply, socket}
 	end
 
-	def handle_in(msg, data, socket) do
+	def handle_in(msg, _data, socket) do
 		IO.inspect "Unhandled message: " <> msg
 		{:noreply, socket}
 	end
@@ -50,6 +46,8 @@ defmodule Hexball.GameChannel do
 	Sends game data (players/ball positions and vectors)
 	"""
 	def handle_out("state", payload, socket) do
+		# i'll probably need to use state:{game_id} and filter
+		# by socket.game
 		#IO.inspect payload
 		push socket, "state", payload
 		{:noreply, socket}
