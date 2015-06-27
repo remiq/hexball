@@ -24,11 +24,18 @@ defmodule Hexball.Game.Simulation do
 	@doc """
 	Adds new player to game and returns their ID.
 	"""
-	def join(server, socket) do
+	def join(server) do
 		:random.seed :erlang.now # this looks bad
 		user_id = Float.to_string(:random.uniform)
 		GenServer.cast(server, {:join, user_id})
 		user_id
+	end
+
+	@doc """
+	Removes player from game
+	"""
+	def leave(server, user_id) do
+		GenServer.cast(server, {:leave, user_id})
 	end
 
 	@doc """
@@ -43,6 +50,11 @@ defmodule Hexball.Game.Simulation do
 		players = Dict.put state[:players], user_id, user
 		state = Dict.put state, :players, players 
 		{:noreply, state}
+	end
+
+	def handle_cast({:leave, user_id}, state) do
+		players = Dict.delete(state[:players], user_id)
+		{:noreply, Dict.put(state, :players, players)}
 	end
 
 	def handle_cast({move, user_id, input}, state) do

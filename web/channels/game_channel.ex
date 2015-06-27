@@ -7,11 +7,21 @@ defmodule Hexball.GameChannel do
 		# FUTURE: private games, tournaments should be started with token distributed by web; alt: channel for private/tournaments
 		IO.inspect "Anonymous player joined game: " <> game_id
 		game = Supervisor.get_game(game_id)
-		user_id = Simulation.join(game, socket)
+		user_id = Simulation.join(game)
 		IO.inspect user_id
 		socket = assign(socket, :user, user_id)
+		socket = assign(socket, :game, game)
 		{:ok, socket}
 	end
+
+	def terminate(_reason, socket) do
+		user_id = socket.assigns[:user]
+		game = socket.assigns[:game]
+		IO.inspect "Player leaving: " <> user_id
+		Simulation.leave(game, user_id)
+	end
+
+	"""
 
 	# TODO: handle terminating users... or not
 
