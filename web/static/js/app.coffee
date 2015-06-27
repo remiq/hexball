@@ -28,7 +28,6 @@ App =
 
 	handle_keys: (w) ->
 		w.onkeydown = (k) ->
-			console.log k.keyCode
 			mi = App.player.move_intent
 			switch k.keyCode
 				when K_UP then mi(0, -1, 0, 0)
@@ -49,17 +48,13 @@ App =
 				when K_X then mi(0, 0, -1, 0)
 		
 	handle_gamestate: (game_state) ->
-		#console.log game_state.players
-		#$('#p1').attr('cx', game_state.x)
 		React.render(
 			React.createElement(StateEl, {state: game_state}),
 			document.getElementById('state')
 		);
 
 	move_send: (player_state) ->
-		#console.log player_state
 		App.chan.push "move:" + GAME, player_state
-		#console.log player_state
 
 
 App.connect()
@@ -96,5 +91,3 @@ StateEl = React.createClass _ =
 		React.createElement 'g', {className: "state"}, [score, objects]
 
 		
-			
-
