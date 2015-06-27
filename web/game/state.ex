@@ -3,29 +3,27 @@ defmodule Hexball.Game.State do
 	def create(game_id) do
 		%{
 			game_id: game_id,
-			players: %{ball: gen_ball}
-			#:ball
-			#:score
+			players: %{ball: gen_ball},
+			score: %{
+				blue: 0,
+				red: 0
+			}
 		}
 	end
+
+	def ball(state), do: state[:players][:ball]
 
 	@doc """
 	Retrieves list of players from state.
 	"""
-	def players(state) do
-		Dict.get(state, :players)
-	end
+	def players(state), do: Dict.get(state, :players)
 
 	@doc """
 	Saves list of players into state
 	"""
-	def set(state, :players, players) do
-		%{state | players: players}
-	end
+	def set(state, :players, players), do: %{state | players: players}
 
-	def player(state, user_id) do
-		state[:players][user_id]
-	end
+	def player(state, user_id), do: state[:players][user_id]
 
 	def add_player(state, user_id) do
 		user = gen_user(user_id)
@@ -70,7 +68,7 @@ defmodule Hexball.Game.State do
 		end
 	end
 
-	defp gen_ball do
+	def gen_ball do
 		%{
 			user_id: 'ball',
 			x: 50, y: 25,

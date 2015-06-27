@@ -30,8 +30,29 @@ defmodule Hexball.Game.Collision do
     check(a, rest, acc ++ [b])
   end
 
-  def check(a, [], acc) do
-    {a, acc}
+  def check(player, [], acc) do
+    {_, %{team: team}} = player
+    {boundaries(team, player), acc}
+  end
+
+  defp boundaries(:ball, {user_id, object}) do
+    {
+      user_id, 
+      %{object |
+          x: max(min(object[:x], 100-5), 5),
+          y: max(min(object[:y], 50-5), 5)
+      }
+    }
+  end
+
+  defp boundaries(_, {user_id, player}) do
+    {
+      user_id, 
+      %{player |
+          x: max(min(player[:x], 100-2.5), 2.5),
+          y: max(min(player[:y], 50-2.5), 2.5)
+      }
+    }
   end
 
   defp is_collided(a, b) do

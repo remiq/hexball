@@ -3,6 +3,7 @@ defmodule Hexball.Game.Simulation do
 	alias Hexball.Game.Collision
 	alias Hexball.Game.State
 	alias Hexball.Game.Move
+	alias Hexball.Game.Endgame
 
 	@update_ms 50
 
@@ -71,6 +72,7 @@ defmodule Hexball.Game.Simulation do
 		state
 		|> Move.process
 		|> Collision.process
+		|> Endgame.process
 	end
 
 
