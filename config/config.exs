@@ -10,7 +10,7 @@ config :hexball, Hexball.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "aaSIQZB+ILwD21+kFAKgFbOJC4V7mVZprhWOYFqQPQWqYpQCsviNamTl9YBt78HT",
-  debug_errors: false,
+  #debug_errors: false,
   pubsub: [name: Hexball.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

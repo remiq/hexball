@@ -13,7 +13,7 @@ defmodule Hexball.Game.Supervisor do
 		supervise(children, strategy: :one_for_one)
 	end
 
-	def get_game(game_name) do
+	def get_game(_game_name) do
 		:single
 	end
 

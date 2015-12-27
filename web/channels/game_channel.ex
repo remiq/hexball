@@ -3,6 +3,8 @@ defmodule Hexball.GameChannel do
 	alias Hexball.Game.Supervisor
 	alias Hexball.Game.Simulation
 
+	intercept ["state"]
+
 	def join("game:" <> game_id, _auth_msg, socket) do
 		# FUTURE: private games, tournaments should be started with token distributed by web; alt: channel for private/tournaments
 		IO.inspect "Anonymous player joined game: " <> game_id
@@ -24,7 +26,8 @@ defmodule Hexball.GameChannel do
 	@doc """
 	Message from player containing vectors and "kick" status
 	"""
-	def handle_in("move:" <> game_id, data, socket) do
+	def handle_in("move", data, socket) do
+		game_id = "one"
 		#IO.inspect "received move"
 		#IO.inspect data
 		#%{"x" => ix, "y" => iy, "k" => kick} = data

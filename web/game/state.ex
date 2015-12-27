@@ -42,7 +42,7 @@ defmodule Hexball.Game.State do
 		}
 	end
 
-	@doc """
+	@docp """
 	Spawns new user
 	"""
 	defp gen_user(user_id) do

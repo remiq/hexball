@@ -5,7 +5,7 @@ defmodule Hexball.Game.Simulation do
 	alias Hexball.Game.Move
 	alias Hexball.Game.Endgame
 
-	@update_ms 50
+	@update_ms 100
 
 	def start_link(opts \\ []) do
 		GenServer.start_link __MODULE__, :ok, opts
@@ -20,7 +20,8 @@ defmodule Hexball.Game.Simulation do
 	Adds new player to game and returns their ID.
 	"""
 	def join(server) do
-		:random.seed :erlang.now # this looks bad
+		<< a :: 32, b :: 32, c :: 32 >> = :crypto.strong_rand_bytes(12)
+    :random.seed(a, b, c)
 		user_id = Float.to_string(:random.uniform)
 		GenServer.cast(server, {:join, user_id})
 		user_id
@@ -54,15 +55,15 @@ defmodule Hexball.Game.Simulation do
 	end
 
 	def handle_info(:step, state) do
-		state = process_step(state)		
+		state = process_step(state)
 		Hexball.Endpoint.broadcast! "game:" <> state[:game_id], "state", state
 		:timer.send_after(@update_ms, :step)
 		{:noreply, state}
 	end
 
 	defp process_intent(player, input) do
-		%{player | 
-			ix: input["x"], 
+		%{player |
+			ix: input["x"],
 			iy: input["y"],
 			kick: input["k"]
 		}
