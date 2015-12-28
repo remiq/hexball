@@ -53,5 +53,8 @@
 <div id="debug">
 
 </div>
+<div>
+  Sterowanie: strzałki
+</div>
 <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-<script>require('web/static/js/app').App.start("one")</script>
+<script>require('web/static/js/app').App.start("<%= @room %>", "<%= @name %>")</script>

@@ -8,9 +8,11 @@ defmodule Hexball.GameSocket do
   transport :longpoll, Phoenix.Transports.LongPoll,
       check_origin: false
 
-  def connect(_, socket) do
-    IO.inspect socket
-    {:ok, socket}
+  def connect(%{"game_id" => game_id, "user_name" => user_name}, socket) do
+    assigns = socket.assigns
+      |> Dict.put(:game_id, game_id)
+      |> Dict.put(:user_name, user_name)
+    {:ok, %{socket | assigns: assigns}}
   end
 
   def id(_socket), do:

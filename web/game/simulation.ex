@@ -19,11 +19,11 @@ defmodule Hexball.Game.Simulation do
 	@doc """
 	Adds new player to game and returns their ID.
 	"""
-	def join(server) do
+	def join(server, user_name) do
 		<< a :: 32, b :: 32, c :: 32 >> = :crypto.strong_rand_bytes(12)
     :random.seed(a, b, c)
 		user_id = Float.to_string(:random.uniform)
-		GenServer.cast(server, {:join, user_id})
+		GenServer.cast(server, {:join, user_id, user_name})
 		user_id
 	end
 
@@ -41,8 +41,8 @@ defmodule Hexball.Game.Simulation do
 		GenServer.cast server, {:move, user_id, data}
 	end
 
-	def handle_cast({:join, user_id}, state) do
-		{:noreply, State.add_player(state, user_id)}
+	def handle_cast({:join, user_id, user_name}, state) do
+		{:noreply, State.add_player(state, user_id, user_name)}
 	end
 
 	def handle_cast({:leave, user_id}, state) do
@@ -75,9 +75,5 @@ defmodule Hexball.Game.Simulation do
 		|> Collision.process
 		|> Endgame.process
 	end
-
-
-
-
 
 end

@@ -25,8 +25,8 @@ defmodule Hexball.Game.State do
 
 	def player(state, user_id), do: state[:players][user_id]
 
-	def add_player(state, user_id) do
-		user = gen_user(user_id)
+	def add_player(state, user_id, user_name) do
+		user = gen_user(user_id, user_name)
 		update_player(state, user_id, user)
 	end
 
@@ -45,9 +45,10 @@ defmodule Hexball.Game.State do
 	@docp """
 	Spawns new user
 	"""
-	defp gen_user(user_id) do
+	defp gen_user(user_id, user_name) do
 		player = %{
 			user_id: user_id,
+			name: user_name,
 			x: 0, y: 0, # position
 			dx: 1, dy: 0.5, # velocity
 			ix: 0, iy: 0, kick: 0, # intention to move

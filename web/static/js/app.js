@@ -8,7 +8,7 @@ export class App extends React.Component {
   constructor(props) {
     super(props)
     this.stream = new Stream()
-    this.connection = new Connection(this.stream, props.game_id)
+    this.connection = new Connection(this.stream, props.game_id, props.user_name)
     this.player = new Player(this.stream)
     this.state = {
       score: {blue: 0, red: 0},
@@ -36,8 +36,8 @@ export class App extends React.Component {
       <Players players={this.state.players} />
     </g>
   }
-  static start(game_id) {
-    ReactDOM.render(<App game_id={game_id} />,
+  static start(game_id, user_name) {
+    ReactDOM.render(<App game_id={game_id} user_name={user_name} />,
       document.getElementById('state'))
   }
 }

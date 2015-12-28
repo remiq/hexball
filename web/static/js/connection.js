@@ -1,11 +1,11 @@
 import {Socket} from 'phoenix'
 
 export class Connection {
-  constructor(stream, game_id) {
+  constructor(stream, game_id, user_name) {
     let socket = new Socket("/socket", {
       logger: ((kind, msg, data) => { this.log(`${kind}: ${msg}`, data) })
     })
-    socket.connect({})
+    socket.connect({game_id: game_id, user_name: user_name})
     socket.onOpen( ev => this.log("OPEN", ev) )
     socket.onError( ev => this.log("ERROR", ev) )
     socket.onClose( e => this.info("Brak połączenia."))

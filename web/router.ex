@@ -16,6 +16,8 @@ defmodule Hexball.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/:room", PageController, :room
+    get "/:room/:name", PageController, :room_with_name
   end
 
   # Other scopes may use custom stacks.
